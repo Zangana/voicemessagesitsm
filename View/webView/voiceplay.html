@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            div {border-style: double}
+            
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      
+      .topnav {
+        overflow: hidden;
+        background-color: #333;
+      }
+      
+      .topnav a {
+        float: left;
+        color: #f2f2f2;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-size: 17px;
+      }
+      
+      .topnav a:hover {
+        background-color: #ddd;
+        color: black;
+      }
+      
+      .topnav a.active {
+        background-color: #4CAF50;
+        color: white;
+      }
+
+        </style>
+    </head>
+<body onload="GetData()">
+
+    <div class="topnav">
+        <a  href="https://localhost:5001/api/incidentmanagements/GetVoicePlay/view">Home</a>
+        <a href="https://localhost:5001/api/incidentmanagements/GetVoicePlay/recordvoice">Open a ticket</a>
+        <a href="https://localhost:5001/api/incidentmanagements/GetVoicePlay/viewticket">View Ticket</a>
+        <a class="active" href="https://localhost:5001/api/incidentmanagements/GetVoicePlay/voiceplay">Response to a ticket</a>
+      </div>
+</body>
+
+
+
+<script>
+    function GetData(){
+     var j = "";
+    fetch('https://localhost:5001/api/IncidentManagements', {
+        method: "GET",
+        headers: {"Content-type": "application/json;charset=UTF-8"}
+    })
+    .then(response => response.json())
+    .then(json => {
+        for(i in json){
+            if(typeof (json[i]['voicemessages'][0]) !== "undefined"){
+                if(json[i]['voicemessages'][0]['voice'] && json[i]['voicemessages'][0]['voiceName']){
+                    var url = 'https://localhost:5001/uploads/';
+                    let div = document.createElement('div');
+                    div.id = json[i]['incidentId']
+                    div.innerHTML = '<h1>Incident: '+json[i]['incidentId']+'</h1><br><audio controls>  <source src=' + "\""+url + json[i]['voicemessages'][0]['voiceName'] + "\"" + 'type="audio/mpeg"></audio>' 
+                        +'<br>' +'<textarea id=' +"\""+ 'textarea' + json[i]['incidentId']+"\"" +'name='+ "\""+'textarea' +json[i]['incidentId']+"\"" + "rows="+"\""+'4'+"\""+'col=' +"\""+'50'+"\"></textarea>" 
+                        +'<br>' + '<label for=' +"\"priority"+json[i]['incidentId']+"\">Priority:</lable>" + '<select name='+"\"priority"+json[i]['incidentId']+'\"id='+"\""+'priority'+json[i]['incidentId']+'\"">' +
+                            ' <option value=\"Critical\">Critical</option>'+' <option value=\"High\">High</option> <option value=\"Medium\">Medium</option><option value=\"Low\">Low</option></select><br>' +
+                            '<lable for='+"\"resulutions"+json[i]['incidentId']+"\">Resultioin</lable>"+
+                            '<select name=\"resolution'+json[i]['incidentId']+'\"'+'id=\"resolution'+json[i]['incidentId']+'\"">'
+                                +
+                            '<option value=\"resolved\">Resolved</option>' +'<option value=\"notresolved\">Not Resolved</option></select>'
+                            +'<br>'+
+                            '<button type=\"button\" onclick=\"submit(document.getElementById(\'resolution'+json[i]['incidentId']+'\').value,document.getElementById(\'textarea'+json[i]['incidentId']+'\').value,document.getElementById(\'priority'+json[i]['incidentId']+'\').value, '+json[i]['incidentId']+')\"">Submit</button>'
+                    console.log(json[i]['voicemessages'][0]['voice']); 
+                    document.body.appendChild(div);
+                }
+            }
+            
+        }        
+       
+    })
+    .catch((error) => {
+        console.error('Error: ', error);
+    });
+}
+
+function submit(resolutionvalue ,textareavalue, priorityvalue, incidentid){
+
+
+    
+    // fetch('https://localhost:5001/api/IncidentManagements/UpdateIncident'+incidentId, {
+    //     method: "PATCH",
+    //     headers: {"Content-type": "application/json;charset=UTF-8"},
+    //     body:JSON.stringify({
+    //        "value": priorityValue,
+    //        "path": "" 
+    //     })
+    // })
+    updateResolutionAndPriority(resolutionvalue, priorityvalue,textareavalue ,incidentid);
+    console.log(resolutionvalue+" "+textareavalue +" "+priorityvalue+" "+ incidentid)
+
+}
+
+function updateResolutionAndPriority(resolution, priority,textareavalue ,incidentId){
+
+    var url = 'https://localhost:5001/api/IncidentManagements/'+incidentId; 
+
+    var dataOfIncident;
+    fetch(url, {
+    method: "GET",
+    headers: {"Content-type": "application/json;charset=UTF-8"}
+    }).then(response => response.json())
+    .then(incidentData => {
+
+        incidentData['incidentPriorities'] = getPriority(priority);
+        incidentData['incidentResolutions'] = getResolution(resolution);
+        if(textareavalue) {
+            var urlOfDes = 'https://localhost:5001/api/descriptions'
+            fetch(urlOfDes, {
+                method: "POST",
+                headers: {"Content-type": "application/json;charset=UTF-8"},
+                body: JSON.stringify({
+                    "describe" : textareavalue,
+                    "incidentManagement": incidentId
+                })
+            }).then(data => console.log(data)).catch(err => console.log(err));
+        }
+
+        console.log(incidentData);
+
+        fetch(url, {
+            method: "PUT",
+            headers: {"Content-type": "application/json;charset=UTF-8", "accept":"*/*","accept-language":"en-US,en;q=0.9"}, 
+            body: JSON.stringify(incidentData)
+        }).then(data => console.log(data)).catch(err => console.log(err));
+        
+    });
+
+    // fetch(url, {
+    //     method: "GET",
+    //     headers: {"Content-type": "application/json", "Accept": "application/json"},
+    //     body:JSON.stringify({
+    //         // "op": "replace",
+    //         // "value": 3,
+    //         // "path": "/incidentPriorities"
+    //         "incidentPriorities": 1
+    //     })
+    // });
+
+//     var xhr = new XMLHttpRequest();
+//     xhr.open("PATCH", url)
+
+//     xhr.setRequestHeader("Accept", "application/json");
+//     xhr.setRequestHeader("Content-type", "application/json")
+
+//     xhr.onreadystatechange = function () {
+//         if (xhr.readyState === 4) {
+//             console.log(xhr.status);
+//             console.log(xhr.responseText);
+//         }
+//     }
+
+//     var data = "{\"incidentPriorities\": "  + getPriority(priority) + "}";
+//     console.log(JSON.parse(data));
+//     xhr.send(JSON.parse(data));
+
+
+ }
+function getPriority(priority){
+    switch(priority){
+        case 'Critical':
+            return 1;
+            break;
+        case 'High':
+            return 2;
+            break;
+        case 'Medium':
+            return 3;
+            break;
+        case 'Low':
+            return 4;
+            break;
+        default:
+            return 0;
+        
+    }
+    return 0;
+}
+
+function getResolution(resolution){
+    switch (resolution){
+        case 'resolved':return 1; break;
+        case 'notresolved':return 0; break;
+    }
+}
+
+</script>
+
+</body>
+</html>
+

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            div {border-style: double}
+
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      
+      .topnav {
+        overflow: hidden;
+        background-color: #333;
+      }
+      
+      .topnav a {
+        float: left;
+        color: #f2f2f2;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-size: 17px;
+      }
+      
+      .topnav a:hover {
+        background-color: #ddd;
+        color: black;
+      }
+      
+      .topnav a.active {
+        background-color: #4CAF50;
+        color: white;
+      }
+
+        </style>
+    </head>
+<body onload="GetData()">
+    <div class="topnav">
+      <a href="https://localhost:5001/api/incidentmanagements/GetVoicePlay/view">Home</a>
+      <a href="https://localhost:5001/api/incidentmanagements/GetVoicePlay/recordvoice">Open a ticket</a>
+      <a class="active" href="https://localhost:5001/api/incidentmanagements/GetVoicePlay/viewticket">View Ticket</a>
+      <a href="https://localhost:5001/api/incidentmanagements/GetVoicePlay/voiceplay">Response to a ticket</a>
+    </div>
+</body>
+
+
+<script>
+    function GetData() {
+        var j = "";
+        fetch('https://localhost:5001/api/IncidentManagements', {
+            method: "GET",
+            headers: {"Content-type": "application/json;charset=UTF-8"}
+        }).then(response => response.json())
+          .then(json => {
+            for (i in json){
+                if(typeof (json[i]['voicemessages'][0]) !== "undefined"){
+                    if(json[i]['voicemessages'][0]['voice'] && json[i]['voicemessages'][0]['voiceName']){
+                        var url = 'https://localhost:5001/uploads/';
+                        let div = document.createElement('div');
+                        div.id = json[i]['incidentId']
+                        div.innerHTML = '<h1>Incident: '+json[i]['incidentId']+'</h1><br><audio controls>  <source src=' + "\""+url + json[i]['voicemessages'][0]['voiceName'] + "\"" + 'type="audio/mpeg"></audio>'
+                        + '<br>' + '<p> Operator\'s respond: ' + getDescription(json[i]['descriptions']) + '</p>'
+                        + '<br>' + '<p> Priority: ' + getPriority(json[i]['incidentPriorities']) + '</p>'
+                        + '<br>' + '<p> Resolutions: ' + getResolution(json[i]['incidentResolutions']) + '</p>'
+                        document.body.appendChild(div);
+
+                    }
+                }
+            }
+          });
+    }
+
+    function getDescription(incidentJson) {
+        var text = "";
+        
+        for (i in incidentJson) {
+        
+            if(incidentJson[i]['describe'] !== "undefined"){
+                text += incidentJson[i]['describe'];
+                text += "<br>";
+            }
+        }
+        return text;
+    }
+
+    function getPriority(priority){
+    switch(priority){
+        case 1:
+            return 'Critical';
+            break;
+        case 2:
+            return 'High';
+            break;
+        case 3:
+            return 'Medium';
+            break;
+        case 4:
+            return 'Low';
+            break;
+        default:
+            return 'none';
+        
+    }
+    return 'none';
+}
+
+function getResolution(resolution){
+    switch (resolution){
+        case 1:return 'resolved'; break;
+        case 0:return 'notresolved'; break;
+    }
+}
+</script>
+
+</body>
+</html>
