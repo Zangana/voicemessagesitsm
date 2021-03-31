@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+This file is used by the publish/package process of your Web project. You can customize the behavior of this process
+by editing this MSBuild file. In order to learn more about this please visit https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAKBJyOu0kmEavPXbTJF/DAAAAAAACAAAAAAAQZgAAAAEAACAAAAAlPOtqo4mKd0DCa1R8xPwZVDXcIrsWX1RtNdG+pkSjOgAAAAAOgAAAAAIAACAAAADwk5laNoIMcoEOlTNPc1Xc8SKERe6CXeR/zLzuspA3jzAAAAAc6qpXcnq/Vek0uyfhSJRaRIZ1CDBhiwaRu6PKiPypmCzoeLD8i4xiPL7K7OxsH39AAAAACIyQ5jPK6Rt7/Idf1bcSHJHiybePPPDHTzcqsADrtn4ynfQZBOiqMQg75ONu5jEhjQgTmr3/4qezAuypET8rSw==</EncryptedPassword>
+  </PropertyGroup>
+  <ItemGroup>
+    <DestinationConnectionStrings Include="ItsmDb">
+      <Value>Server=LAPTOP-VITDCEF3\SQLEXPRESS%3bDatabase=voicemsgitsm%3bTrusted_Connection=True%3b</Value>
+    </DestinationConnectionStrings>
+  </ItemGroup>
+</Project>
