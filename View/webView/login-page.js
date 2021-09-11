@@ -10,13 +10,13 @@ loginButton.addEventListener("click", (e) => {
     const username = loginForm.username.value;
     const password = loginForm.password.value;
 
-    fetch('https://localhost:5001/api/Users/Login',{
-        method: 'POST',
+    fetch('/api/Users/Login',{
+        method: 'GET',
         headers: {'Content-Type': 'application/json;charset=UTF-8'},
         body: JSON.stringify({
             'userName': username,
             'password': password
         })
 
-    }).then(response => console.log(response)).then(window.location.replace("https://localhost:5001/api/incidentmanagements/GetVoicePlay/view")).catch(err => console.log(err));
+    }).then(response => console.log(response)).then(window.location.replace("/api/incidentmanagements/GetVoicePlay/view")).catch(err => console.log(err));
 })

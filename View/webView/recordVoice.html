@@ -41,10 +41,11 @@
   </head>
   <body>
     <div class="topnav">
-      <a  href="https://localhost:5001/api/incidentmanagements/GetVoicePlay/view">Home</a>
-      <a class="active"href="https://localhost:5001/api/incidentmanagements/GetVoicePlay/recordvoice">Open a ticket</a>
-      <a href="https://localhost:5001/api/incidentmanagements/GetVoicePlay/viewticket">View Ticket</a>
-      <a href="https://localhost:5001/api/incidentmanagements/GetVoicePlay/voiceplay">Response to a ticket</a>
+      <a  href="/api/incidentmanagements/GetVoicePlay/view">Home</a>
+      <a class="active"href="/api/incidentmanagements/GetVoicePlay/recordvoice">Open a ticket</a>
+      <a href="/api/incidentmanagements/GetVoicePlay/viewticket">View Ticket</a>
+      <a href="/api/incidentmanagements/GetVoicePlay/voiceplay">Response to the ticket by the operator</a>
+      <a href="/api/incidentmanagements/GetVoicePlay/respondByTheTeams">Response to the ticket by the teams</a>
     </div>
     
     <h1>Simple Recorder.js demo</h1>
@@ -61,12 +62,12 @@
   	<ol id="recordingsList"></ol>
     <!-- inserting these scripts at the end to be able to use all the elements in the DOM -->
   	<script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
-  	<script src="https://localhost:5001/api/incidentmanagements/app.js"></script>
+  	<script src="/api/incidentmanagements/app.js"></script>
 
     <h1>Upload Files</h1>
 <div class="row">
-    <section>
-      <form method="post" enctype="multipart/form-data" action="https://localhost:5001/api/incidentmanagements/fileupload">
+    <section style="margin: 0 2rem;">
+      <form method="post" enctype="multipart/form-data" action="/api/incidentmanagements/fileupload">
 
         <span>Select File:</span>
         <input type="file" name="postedFiles" multiple />

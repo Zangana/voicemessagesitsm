@@ -46,6 +46,7 @@ namespace ItstmVoiceMessages
             //localhost:5000/Uploads 
             //The path to get the files from Uploads file.
             app.UseStaticFiles(new StaticFileOptions() { 
+               
                 FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"Uploads")),
                 RequestPath = new PathString("/Uploads")
                 

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+    <head>
+        <style>
+            div {border-style: double}
+            
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      
+      .topnav {
+        overflow: hidden;
+        background-color: #333;
+      }
+      
+      .topnav a {
+        float: left;
+        color: #f2f2f2;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-size: 17px;
+      }
+      
+      .topnav a:hover {
+        background-color: #ddd;
+        color: black;
+      }
+      
+      .topnav a.active {
+        background-color: #4CAF50;
+        color: white;
+      }
+
+      .redText{
+          color:red;
+          font-weight: bold;
+      }
+
+      .yellowText{
+          color: yellowgreen;
+          font-weight: bold;
+      }
+      
+      .blueText{
+          color:blue;
+          font-weight: bold;
+      }
+      .highRedText{
+          color: rebeccapurple;
+          font-weight: bold;
+      }
+      
+#myInput {
+  background-position: 10px 10px;
+  background-repeat: no-repeat;
+  background-color: wheat;
+  width: 30%;
+  font-size: 16px;
+  padding: 12px 20px 12px 40px;
+  border: 1px solid #ddd;
+  margin-bottom: 12px;
+}
+        </style>
+    </head>
+<body onload="GetData()">
+
+    <div class="topnav">
+        <a  href="/api/incidentmanagements/GetVoicePlay/view">Home</a>
+        <a href="/api/incidentmanagements/GetVoicePlay/recordvoice">Open a ticket</a>
+        <a href="/api/incidentmanagements/GetVoicePlay/viewticket">View Ticket</a>
+        <a href="/api/incidentmanagements/GetVoicePlay/voiceplay">Response to a ticket</a>
+        <a class="active" href="/api/incidentmanagements/GetVoicePlay/respondByTheTeams">Response by the team</a>
+      </div>
+      <!-- <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name"> -->
+      <label>Search</label>
+      <select id="myInput" onchange="myFunction()">'
+        + '<option value=""></option>'+
+    '<option value="Technical Support">Technical Support</option>' +'<option value="Develoeprs">Developers</option>
+        +
+        <option value="Logistics">Logistics</option>' +'<option value="None">None</option></select>
+        </select>
+      <table id="myTableData" border="1" cellpadding="2">
+          <tr class="header">
+              
+              <th>Incident Number</th>
+              <th>Play the voice</th>
+              <th>Responding to the ticket</th>
+              <th>Descriptions</th>
+              <th>Priority</th>
+              <th>Resultions</th>
+              <th>Send it to</th>
+              <th>Submitting</th>
+              
+          </tr>
+      </table>
+</body>
+
+
+
+<script>
+    function GetData(){
+     var j = "";
+    fetch('/api/IncidentManagements', {
+        method: "GET",
+        headers: {"Content-type": "application/json;charset=UTF-8"}
+    })
+    .then(response => response.json())
+    .then(json => {
+        var l = 0;
+        var table = document.getElementById("myTableData");
+        var rowCount = table.rows.length;
+        var row = table.insertRow(rowCount);
+        
+        for(i in json){
+            
+            if(typeof (json[i]['voicemessages'][0]) !== "undefined"){
+                
+                if(json[i]['voicemessages'][0]['voice'] && json[i]['voicemessages'][0]['voiceName']){
+
+                    var url = '/uploads/';
+                    // let div = document.createElement('div');
+                    // div.id = json[i]['incidentId']
+                    // div.innerHTML = '<h1>Incident: '+json[i]['incidentId']+'</h1><br><audio controls>  <source src=' + "\""+url + json[i]['voicemessages'][0]['voiceName'] + "\"" + 'type="audio/mpeg"></audio>' 
+                    //     +'<br>' +'<textarea id=' +"\""+ 'textarea' + json[i]['incidentId']+"\"" +'name='+ "\""+'textarea' +json[i]['incidentId']+"\"" + "rows="+"\""+'4'+"\""+'col=' +"\""+'50'+"\"></textarea>" 
+                    //     +'<br>' + '<label for=' +"\"priority"+json[i]['incidentId']+"\">Priority:</lable>" + '<select name='+"\"priority"+json[i]['incidentId']+'\"id='+"\""+'priority'+json[i]['incidentId']+'\"">' +
+                    //         ' <option value=\"Critical\">Critical</option>'+' <option value=\"High\">High</option> <option value=\"Medium\">Medium</option><option value=\"Low\">Low</option></select><br>' +
+                    //         '<lable for='+"\"resulutions"+json[i]['incidentId']+"\">Resultioin</lable>"+
+                    //         '<select name=\"resolution'+json[i]['incidentId']+'\"'+'id=\"resolution'+json[i]['incidentId']+'\"">'
+                    //             +
+                    //         '<option value=\"resolved\">Resolved</option>' +'<option value=\"notresolved\">Not Resolved</option></select>'
+                    //         +'<br>'+
+                    //         '<button type=\"button\" onclick=\"submit(document.getElementById(\'resolution'+json[i]['incidentId']+'\').value,document.getElementById(\'textarea'+json[i]['incidentId']+'\').value,document.getElementById(\'priority'+json[i]['incidentId']+'\').value, '+json[i]['incidentId']+')\"">Submit</button>'
+                    // console.log(json[i]['voicemessages'][0]['voice']); 
+                    // document.body.appendChild(div);
+
+                    rowCount = table.rows.length;
+                    row = table.insertRow(rowCount);
+                    
+                    row.insertCell(0).innerHTML = '<button type=\"button\" onclick=\"submit(document.getElementById(\'resolution'+json[i]['incidentId']+'\').value,document.getElementById(\'textarea'+json[i]['incidentId']+'\').value,document.getElementById(\'priority'+json[i]['incidentId']+'\').value, '+json[i]['incidentId']+',document.getElementById(\'team'+json[i]['incidentId']+'\').value)\"">Submit</button>'
+                    row.insertCell(0).innerHTML = getTeam(json[i]['incidentTeams'])
+
+                    row.insertCell(0).innerHTML=  '<select name=\"resolution'+json[i]['incidentId']+'\"'+'id=\"resolution'+json[i]['incidentId']+'\"">'
+                                +
+                            '<option value=\"resolved\">Resolved</option>' +'<option value=\"notresolved\">Not Resolved</option></select>'
+                    var cell = row.insertCell(0);
+                    cell.innerHTML = getPriority(json[i]['incidentPriorities'])
+                    if(getPriority(json[i]['incidentPriorities']) == 'Critical'){
+                          cell.setAttribute('class', 'redText')
+                    } else if(getPriority(json[i]['incidentPriorities']) == 'Medium'){
+                          cell.setAttribute('class','yellowText')
+                    } else if(getPriority(json[i]['incidentPriorities']) == 'Low'){
+                           cell.setAttribute('class','blueText')
+                    } else if(getPriority(json[i]['incidentPriorities']) == 'High'){
+                          cell.setAttribute('class','highRedText')
+                    }
+                    row.insertCell(0).innerHTML = getDescription(json[i]['descriptions'])
+
+                    row.insertCell(0).innerHTML = '<textarea id=' +"\""+ 'textarea' + json[i]['incidentId']+"\"" +'name='+ "\""+'textarea' +json[i]['incidentId']+"\"" + "rows="+"\""+'4'+"\""+'col=' +"\""+'50'+"\"></textarea>"
+                    row.insertCell(0).innerHTML = '<audio controls>  <source src=' + "\""+url + json[l]['voicemessages'][0]['voiceName'] + "\"" + 'type="audio/mpeg"></audio>' 
+                    row.insertCell(0).innerHTML = l + 1
+                    console.log(url + json[i]['voicemessages'][0]['voiceName'])
+                    l++;
+                }
+                
+            }
+
+            
+            
+        }        
+       
+    })
+    .catch((error) => {
+        console.error('Error: ', error);
+    });
+
+
+}
+
+function submit(resolutionvalue ,textareavalue, priorityvalue, incidentid, team){
+
+
+    
+    // fetch('/api/IncidentManagements/UpdateIncident'+incidentId, {
+    //     method: "PATCH",
+    //     headers: {"Content-type": "application/json;charset=UTF-8"},
+    //     body:JSON.stringify({
+    //        "value": priorityValue,
+    //        "path": "" 
+    //     })
+    // })
+    updateResolutionAndPriority(resolutionvalue, priorityvalue,textareavalue ,incidentid, team);
+    console.log(resolutionvalue+" "+textareavalue +" "+priorityvalue+" "+ incidentid, team)
+
+}
+
+function updateResolutionAndPriority(resolution, priority,textareavalue ,incidentId, team){
+
+    var url = '/api/IncidentManagements/'+incidentId; 
+
+    var dataOfIncident;
+    fetch(url, {
+    method: "GET",
+    headers: {"Content-type": "application/json;charset=UTF-8"}
+    }).then(response => response.json())
+    .then(incidentData => {
+
+        incidentData['incidentPriorities'] = getPriority(priority);
+        incidentData['incidentResolutions'] = getResolution(resolution);
+        incidentData['incidentTeams'] = getTeam(team)
+        if(textareavalue) {
+            var urlOfDes = '/api/descriptions'
+            fetch(urlOfDes, {
+                method: "POST",
+                headers: {"Content-type": "application/json;charset=UTF-8"},
+                body: JSON.stringify({
+                    "describe" : textareavalue,
+                    "incidentManagement": incidentId
+                })
+            }).then(data => console.log(data)).catch(err => console.log(err));
+        }
+
+        console.log(incidentData);
+
+        fetch(url, {
+            method: "PUT",
+            headers: {"Content-type": "application/json;charset=UTF-8", "accept":"*/*","accept-language":"en-US,en;q=0.9"}, 
+            body: JSON.stringify(incidentData)
+        }).then(data => console.log(data)).catch(err => console.log(err));
+        
+    });
+
+    // fetch(url, {
+    //     method: "GET",
+    //     headers: {"Content-type": "application/json", "Accept": "application/json"},
+    //     body:JSON.stringify({
+    //         // "op": "replace",
+    //         // "value": 3,
+    //         // "path": "/incidentPriorities"
+    //         "incidentPriorities": 1
+    //     })
+    // });
+
+//     var xhr = new XMLHttpRequest();
+//     xhr.open("PATCH", url)
+
+//     xhr.setRequestHeader("Accept", "application/json");
+//     xhr.setRequestHeader("Content-type", "application/json")
+
+//     xhr.onreadystatechange = function () {
+//         if (xhr.readyState === 4) {
+//             console.log(xhr.status);
+//             console.log(xhr.responseText);
+//         }
+//     }
+
+//     var data = "{\"incidentPriorities\": "  + getPriority(priority) + "}";
+//     console.log(JSON.parse(data));
+//     xhr.send(JSON.parse(data));
+
+
+ }
+function getPriority(priority){
+    switch(priority){
+        case 'Critical':
+            return 1;
+            break;
+        case 'High':
+            return 2;
+            break;
+        case 'Medium':
+            return 3;
+            break;
+        case 'Low':
+            return 4;
+            break;
+        default:
+            return 0;
+        
+    }
+    return 0;
+}
+
+function getResolution(resolution){
+    switch (resolution){
+        case 'resolved':return 2; break;
+        case 'notresolved':return 1; break;
+    }
+}
+function getTeam(team){
+        switch(team){
+            case 1:
+                return 'Developers';
+                break;
+            case 2:
+                return 'Technical Support'
+                break;
+            case 3:
+                return 'Logistics'
+                break;
+            default:
+                return 'None'
+                break
+
+        }
+    }
+
+    function myFunction() {
+  var input, filter, table, tr, td, i, txtValue;
+  input = document.getElementById("myInput");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("myTableData");
+  tr = table.getElementsByTagName("tr");
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[6];
+    if (td) {
+      txtValue = td.textContent || td.innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }       
+  }
+  
+}
+
+function getPriority(priority){
+    switch(priority){
+        case 1:
+            return 'Critical';
+            break;
+        case 2:
+            return 'High';
+            break;
+        case 3:
+            return 'Medium';
+            break;
+        case 4:
+            return 'Low';
+            break;
+        default:
+            return 'none';
+        
+    }
+    return 'none';
+}
+
+function getDescription(incidentJson) {
+        var text = "";
+        
+        for (i in incidentJson) {
+        
+            if(incidentJson[i]['describe'] !== "undefined"){
+                text += incidentJson[i]['describe'];
+                text += "<br>";
+            }
+        }
+        return text;
+    }
+</script>
+
+</body>
+</html>
+

@@ -23,6 +23,7 @@ namespace ItstmVoiceMessages.Models
         public int? IncidentClosures { get; set; }
         public int? IncidentPriorities { get; set; }
         public int? IncidentCategories { get; set; }
+        public int? IncidentTeams { get; set; }
 
         public virtual IncidentCategory IncidentCategoriesNavigation { get; set; }
         public virtual IncidentClosure IncidentClosuresNavigation { get; set; }

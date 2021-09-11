@@ -33,38 +33,93 @@
         color: white;
       }
 
+      .redText{
+          color:red;
+          font-weight: bold;
+      }
+
+      .yellowText{
+          color: yellowgreen;
+          font-weight: bold;
+      }
+      
+      .blueText{
+          color:blue;
+          font-weight: bold;
+      }
+      .highRedText{
+          color: rebeccapurple;
+          font-weight: bold;
+      }
         </style>
     </head>
 <body onload="GetData()">
     <div class="topnav">
-      <a href="https://localhost:5001/api/incidentmanagements/GetVoicePlay/view">Home</a>
-      <a href="https://localhost:5001/api/incidentmanagements/GetVoicePlay/recordvoice">Open a ticket</a>
-      <a class="active" href="https://localhost:5001/api/incidentmanagements/GetVoicePlay/viewticket">View Ticket</a>
-      <a href="https://localhost:5001/api/incidentmanagements/GetVoicePlay/voiceplay">Response to a ticket</a>
+      <a href="/api/incidentmanagements/GetVoicePlay/view">Home</a>
+      <a href="/api/incidentmanagements/GetVoicePlay/recordvoice">Open a ticket</a>
+      <a class="active" href="/api/incidentmanagements/GetVoicePlay/viewticket">View Ticket</a>
+      <a href="/api/incidentmanagements/GetVoicePlay/voiceplay">Response to the ticket by the operator</a>
+      <a href="/api/incidentmanagements/GetVoicePlay/respondByTheTeams">Response to the ticket by the teams</a>
     </div>
+
+    <table id="myTableData" border="1" cellpadding="2">
+        <tr>
+            
+            <td>Incident Number</td>
+            <td>Play the voice</td>
+            <td>Description</td>
+            <td>Priority</td>
+            <td>Resultions</td>
+            <td>Sent to</td>
+        </tr>
+    </table>
 </body>
 
 
 <script>
     function GetData() {
         var j = "";
-        fetch('https://localhost:5001/api/IncidentManagements', {
+        fetch('/api/IncidentManagements', {
             method: "GET",
             headers: {"Content-type": "application/json;charset=UTF-8"}
         }).then(response => response.json())
           .then(json => {
+            var l = 0;
+            var table = document.getElementById("myTableData");
+            var rowCount = table.rows.length;
+            var row = table.insertRow(rowCount);
             for (i in json){
                 if(typeof (json[i]['voicemessages'][0]) !== "undefined"){
                     if(json[i]['voicemessages'][0]['voice'] && json[i]['voicemessages'][0]['voiceName']){
-                        var url = 'https://localhost:5001/uploads/';
-                        let div = document.createElement('div');
-                        div.id = json[i]['incidentId']
-                        div.innerHTML = '<h1>Incident: '+json[i]['incidentId']+'</h1><br><audio controls>  <source src=' + "\""+url + json[i]['voicemessages'][0]['voiceName'] + "\"" + 'type="audio/mpeg"></audio>'
-                        + '<br>' + '<p> Operator\'s respond: ' + getDescription(json[i]['descriptions']) + '</p>'
-                        + '<br>' + '<p> Priority: ' + getPriority(json[i]['incidentPriorities']) + '</p>'
-                        + '<br>' + '<p> Resolutions: ' + getResolution(json[i]['incidentResolutions']) + '</p>'
-                        document.body.appendChild(div);
+                        var url = '/uploads/';
+                        // let div = document.createElement('div');
+                        // div.id = json[i]['incidentId']
+                        // div.innerHTML = '<h1>Incident: '+json[i]['incidentId']+'</h1><br><audio controls>  <source src=' + "\""+url + json[i]['voicemessages'][0]['voiceName'] + "\"" + 'type="audio/mpeg"></audio>'
+                        // + '<br>' + '<p> Operator\'s respond: ' + getDescription(json[i]['descriptions']) + '</p>'
+                        // + '<br>' + '<p> Priority: ' + getPriority(json[i]['incidentPriorities']) + '</p>'
+                        // + '<br>' + '<p> Resolutions: ' + getResolution(json[i]['incidentResolutions']) + '</p>'
+                        // document.body.appendChild(div);
 
+
+                        rowCount = table.rows.length;
+                        row = table.insertRow(rowCount);
+                        row.insertCell(0).innerHTML = getTeam(json[i]['incidentTeams'])
+                        row.insertCell(0).innerHTML = getResolution(json[i]['incidentResolutions'])
+                        var cell = row.insertCell(0);
+                        cell.innerHTML = getPriority(json[i]['incidentPriorities'])
+                        if(getPriority(json[i]['incidentPriorities']) == 'Critical'){
+                            cell.setAttribute('class', 'redText')
+                        } else if(getPriority(json[i]['incidentPriorities']) == 'Medium'){
+                            cell.setAttribute('class','yellowText')
+                        } else if(getPriority(json[i]['incidentPriorities']) == 'Low'){
+                            cell.setAttribute('class','blueText')
+                        } else if(getPriority(json[i]['incidentPriorities']) == 'High'){
+                            cell.setAttribute('class','highRedText')
+                        }
+                        row.insertCell(0).innerHTML = getDescription(json[i]['descriptions'])
+                        row.insertCell(0).innerHTML = '<audio controls>  <source src=' + "\""+url + json[l]['voicemessages'][0]['voiceName'] + "\"" + 'type="audio/mpeg"></audio>'
+                        row.insertCell(0).innerHTML = l + 1
+                        l++
                     }
                 }
             }
@@ -82,6 +137,24 @@
             }
         }
         return text;
+    }
+
+    function getTeam(team){
+        switch(team){
+            case 1:
+                return 'Developers';
+                break;
+            case 2:
+                return 'Technical Support'
+                break;
+            case 3:
+                return 'Logistics'
+                break;
+            default:
+                return 'None'
+                break
+
+        }
     }
 
     function getPriority(priority){
@@ -106,9 +179,11 @@
 }
 
 function getResolution(resolution){
+    console.log(resolution);
     switch (resolution){
-        case 1:return 'resolved'; break;
-        case 0:return 'notresolved'; break;
+        case 2:return 'Resolved'; break;
+        case 1:return 'Not Resolved'; break;
+        default: return "NONE"; break;
     }
 }
 </script>

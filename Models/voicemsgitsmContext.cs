@@ -26,6 +26,7 @@ namespace ItstmVoiceMessages.Models
         public virtual DbSet<IncidentPriority> IncidentPriorities { get; set; }
         public virtual DbSet<IncidentResolution> IncidentResolutions { get; set; }
         public virtual DbSet<IncidentTicket> IncidentTickets { get; set; }
+        public virtual DbSet<Team> Teams { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Voicemessage> Voicemessages { get; set; }
 
@@ -33,7 +34,8 @@ namespace ItstmVoiceMessages.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Name=ItsmDb");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseSqlServer("Server=LAPTOP-VITDCEF3\\SQLEXPRESS;Database=voicemsgitsm;Trusted_Connection=True;");
             }
         }
 
@@ -67,6 +69,7 @@ namespace ItstmVoiceMessages.Models
                 entity.HasOne(d => d.IncidentManagementNavigation)
                     .WithMany(p => p.Descriptions)
                     .HasForeignKey(d => d.IncidentManagement)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK__descripti__incid__4BAC3F29");
             });
 
@@ -96,6 +99,7 @@ namespace ItstmVoiceMessages.Models
                 entity.HasOne(d => d.IncidentManagementNavigation)
                     .WithMany(p => p.Images)
                     .HasForeignKey(d => d.IncidentManagement)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK__images__incident__4AB81AF0");
             });
 
@@ -158,6 +162,8 @@ namespace ItstmVoiceMessages.Models
 
                 entity.Property(e => e.IncidentResolutions).HasColumnName("incident_resolutions");
 
+                entity.Property(e => e.IncidentTeams).HasColumnName("incident_teams");
+
                 entity.Property(e => e.IncidentTicket).HasColumnName("incident_ticket");
 
                 entity.Property(e => e.UserId).HasColumnName("user_id");
@@ -165,36 +171,42 @@ namespace ItstmVoiceMessages.Models
                 entity.HasOne(d => d.IncidentCategoriesNavigation)
                     .WithMany(p => p.IncidentManagements)
                     .HasForeignKey(d => d.IncidentCategories)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK__incident___incid__4E88ABD4");
 
                 entity.HasOne(d => d.IncidentClosuresNavigation)
                     .WithMany(p => p.IncidentManagements)
                     .HasForeignKey(d => d.IncidentClosures)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK__incident___incid__52593CB8");
 
                 entity.HasOne(d => d.IncidentLoggingsNavigation)
                     .WithMany(p => p.IncidentManagements)
                     .HasForeignKey(d => d.IncidentLoggings)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK__incident___incid__4F7CD00D");
 
                 entity.HasOne(d => d.IncidentPrioritiesNavigation)
                     .WithMany(p => p.IncidentManagements)
                     .HasForeignKey(d => d.IncidentPriorities)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK__incident___incid__534D60F1");
 
                 entity.HasOne(d => d.IncidentResolutionsNavigation)
                     .WithMany(p => p.IncidentManagements)
                     .HasForeignKey(d => d.IncidentResolutions)
-                    .HasConstraintName("FK__incident___incid__5165187F");
+                    .HasConstraintName("FK_incident_management_incident_resolutions1");
 
                 entity.HasOne(d => d.IncidentTicketNavigation)
                     .WithMany(p => p.IncidentManagements)
                     .HasForeignKey(d => d.IncidentTicket)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK__incident___incid__5070F446");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.IncidentManagements)
                     .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK__incident___user___4CA06362");
             });
 
@@ -232,6 +244,21 @@ namespace ItstmVoiceMessages.Models
                 entity.Property(e => e.TicId).HasColumnName("tic_id");
 
                 entity.Property(e => e.Ticket).HasColumnName("ticket");
+            });
+
+            modelBuilder.Entity<Team>(entity =>
+            {
+                entity.HasKey(e => e.TeamsId);
+
+                entity.ToTable("team");
+
+                entity.Property(e => e.TeamsId)
+                    .ValueGeneratedNever()
+                    .HasColumnName("teams_id");
+
+                entity.Property(e => e.TeamsName)
+                    .HasMaxLength(50)
+                    .HasColumnName("teams_name");
             });
 
             modelBuilder.Entity<User>(entity =>
@@ -285,6 +312,7 @@ namespace ItstmVoiceMessages.Models
                 entity.HasOne(d => d.IncidentManagementNavigation)
                     .WithMany(p => p.Voicemessages)
                     .HasForeignKey(d => d.IncidentManagement)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK__voicemess__incid__4D94879B");
             });
 

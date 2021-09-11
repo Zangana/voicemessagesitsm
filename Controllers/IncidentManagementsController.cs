@@ -12,6 +12,7 @@ using AutoMapper;
 using System.Diagnostics;
 using System;
 using System.Net;
+using System.Text;
 
 namespace ItstmVoiceMessages.Controllers
 {
@@ -36,7 +37,6 @@ namespace ItstmVoiceMessages.Controllers
         {
             
             return await _context.IncidentManagements.Include(u => u.Descriptions)
-                
                 .Include(u => u.Voicemessages).AsSplitQuery().ToListAsync();
         }
 
@@ -190,10 +190,10 @@ namespace ItstmVoiceMessages.Controllers
                // _context.SaveChanges();
                 await _context.SaveChangesAsync();
 
-                return Redirect("https://localhost:5001/api/incidentmanagements/GetVoicePlay/index");
+                //return Redirect("/api/incidentmanagements/GetVoicePlay/index");
                 //return CreatedAtAction("GetIncidentManagement", new { voicemessages = incidentManagement.Voicemessages,   id = incidentManagement.IncidentId }, incidentManagement);
                // return Ok(new { pathWfilename });
-                //return NoContent();
+                return NoContent();
             }catch(Exception e)
             {
                 Debug.Print(e.Message);
@@ -216,9 +216,14 @@ namespace ItstmVoiceMessages.Controllers
             var webroot = env.WebRootPath;
             var htmlPath = System.IO.Path.Combine("C:\\Users\\WAZA\\Desktop\\ukh\\thesis\\app\\ItstmVoiceMessages\\templates\\index.html");
 
-            //var fileContent = System.IO.File.ReadAllText(htmlPath) ;
+            var fileContents = System.IO.File.ReadAllText(htmlPath) ;
 
-            return PhysicalFile(htmlPath, "text/html");
+            // return PhysicalFile(htmlPath, "text/html");
+            return new ContentResult
+            {
+                Content = fileContents,
+                ContentType = "text/html"
+            };
         }
 
         /// <summary>
@@ -233,14 +238,21 @@ namespace ItstmVoiceMessages.Controllers
             string path = Path.Combine(this.env.ContentRootPath, "View/webView");
 
             var webroot = env.WebRootPath;
-           // var htmlPath = System.IO.Path.Combine("C:\\Users\\WAZA\\Desktop\\ukh\\thesis\\app\\ItstmVoiceMessages\\View\\webView\\voiceplay.html");
-
-            var fileContent = System.IO.File.ReadAllText(Path.Combine(path, nameOfFile + ".html")) ;
-            
-            return new ContentResult {
-                Content = fileContent,
-            ContentType = "text/html"
-                    };
+            // 
+            // var htmlPath = System.IO.Path.Combine("C:\\Users\\WAZA\\Desktop\\ukh\\thesis\\app\\ItstmVoiceMessages\\View\\webView\\voiceplay.html");
+             var fileContent = System.IO.File.ReadAllText(Path.Combine(path, nameOfFile + ".html"), Encoding.UTF8) ;
+            return Content(fileContent, "text/html");
+           // var contents = "";
+           // using (StreamReader streamReader = new StreamReader(new FileStream(Path.Combine(path, nameOfFile + ".html"), FileMode.Open),Encoding.UTF8, true,1024))
+           // {
+           //     contents = streamReader.ReadToEnd();
+           // }
+           //// return contents;
+           // return new ContentResult
+           // {
+           //     Content = contents,
+           //     ContentType = "text/html"
+           // };
 
         }
         /// <summary>
@@ -253,6 +265,7 @@ namespace ItstmVoiceMessages.Controllers
             string path = Path.Combine(this.env.ContentRootPath, "View/webView/js");
             var fileContent = System.IO.File.ReadAllText(Path.Combine(path, "app.js"));
 
+
             return Content(fileContent, "text/javascript");
 
         }
@@ -263,10 +276,12 @@ namespace ItstmVoiceMessages.Controllers
         [HttpGet("GetVoicePlay/style.css")]
         public IActionResult GetStyleOfRecordAsync()
         {
+            
             string path = Path.Combine(this.env.ContentRootPath, "View/webView");
-            var fileContent = System.IO.File.ReadAllText(Path.Combine(path, "style.css"));
 
-            return Content(fileContent, "text/css");
+            var fileContent = System.IO.File.ReadAllText(Path.Combine(path, "style.css"));
+            
+                return Content(fileContent, "text/css");
         }
         /// <summary>
         /// 

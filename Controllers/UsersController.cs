@@ -83,7 +83,7 @@ namespace ItstmVoiceMessages.Controllers
             return NoContent();
         }
         // POST: api/Users/login
-        [HttpPost("Login")]
+        [HttpGet("Login")]
         public async Task<ActionResult<User>> LoginUser([FromBody] User username)
         {
             var user = await _context.Users.Where(u => u.UserName == username.UserName
